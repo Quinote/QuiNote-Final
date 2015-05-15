@@ -987,3 +987,18 @@ ol {
 	width: 100%;
 
 }
+
+
+#newFileMaker {
+    cursor:copy;
+}
+#newFileMakerDiv {
+    z-index:3;
+    display:none; /*goes to visible*/
+    position:absolute;
+    top:55px;
+    right:50px;
+    padding:5px;
+    border:1px black solid;
+    background:white;
+}
