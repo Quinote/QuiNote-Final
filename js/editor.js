@@ -6,8 +6,7 @@
  *
  * TODO:
  *    - Hook up toolbar buttons
- *    - Update parser on paste, undo, redo, general entry
- *      • Make sure update is AFTER the entry
+ *    - Update parser on load
  *    - Fix quirky tab behavior
  *    - Fix quirky delete behavior (when deleting a range including list items)
  */
