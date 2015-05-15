@@ -1,0 +1,97 @@
+<?php
+
+require('trylogin/methods.php');
+
+
+/*********************/
+/*If user has submitted register form
+  Make sure username isn't taken and they are being reasonable (should switch to javascript pre-POST in later versions)
+  Add them to the users database
+*/
+/*********************/
+if ($_POST['register']){
+	if ($_POST['username'] && $_POST['password']){
+		$username = mysql_real_escape_string($_POST['username']);
+		$password = mysql_real_escape_string(hash("sha512",$_POST['password']));
+		$check = mysql_fetch_array(mysql_query("SELECT * FROM `users` WHERE `username`='$username'"));
+		if($check != '0'){
+			die("That username already exists. <a href='index_register.html'>&larr; Back</a>");
+		}
+		if (!ctype_alnum($username)){
+			die("Username must be alphanumeric. <a href='index_register.html'>&larr; Back</a>");
+		}
+		if (strlen($username) > 200){
+			die("Sorry, this is an absurdly long username. Try again, with less than 200 characters");
+		}
+		$salt = hash("sha512", rand() . rand() . rand());
+		mysql_query("INSERT INTO `users` (`username`,`password`,`salt`) VALUES ('$username', '$password', '$salt')");
+		$_SESSION['c_user']=hash("sha512",$username);
+		$_SESSION['c_salt']=$salt;
+		$_SESSION['username']=$username;
+		
+		$id = mysql_insert_id();
+		$_SESSION['userid']=$id;
+		
+		header( 'Location: filebrowser.php' );
+	}
+	else {
+		die("Please provide a username and password. <a href='index_register.html'>&larr; Back</a>");
+	}
+}
+?>
+<!DOCTYPE html>
+<html>
+    <head>
+		<meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="style/quinote.css" />
+      <link rel='icon'
+      type='image/png' 
+      href='style/favicon.png' />
+    </head>
+
+    <body>
+	    <div id="main_register">
+            <div id="register_containter">
+	            <div id="register_form">
+	            	<div id="reg_logo">
+						<a class="svg-link" href="index.html">
+		                    <img height="50px"  src="style/svg/pageMainShadow.svg">
+		                </a>
+						<a class="svg-link" href="index.html">
+		                    <img height="50px"  src="style/svg/typeQuinote.svg">
+		                </a>
+	            	</div>
+	            	<div id="reg_reg">
+	            	<h1>Registration Form</h1>
+	            	</div>
+	            	<form id="reg-form" action="" method="post">
+	            		<table id="register_form">
+	            			<tbody>
+	            				<tr>	
+	            					<td><b>Username:</b></td>
+	            					<td><input type="text" name="username"></td>
+	            				</tr>
+	            				<tr>
+	            					<td><b>Password:</b></td>
+	            					<td><input type="password" name="password"></td>
+	            				</tr>
+	            				<!--<tr>
+	            					<td><b>Email:</b><td>
+	            					<td><input type='email' name='email' /><br />
+	            					*Optional
+	            				</tr>-->
+	            			</tbody>
+	            		</table>
+	            		<br>
+	            		<input style="text-align: left" class="qbutton flatbutton-quiz" type="submit" name="register" value="Register">
+	            	</form>
+	            	<div id="reg-user">
+	            		<br>
+	            		Forgot your password? Email quinoted@gmail.com
+	            	</div>
+	            </div>
+	        </div>
+        </div>
+
+	</body>
+</html>
