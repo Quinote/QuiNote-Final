@@ -21,31 +21,11 @@ var editorMain = function() {
         auto_focus : 'editor_div',
         paste_text_sticky: true,
         content_css : '../style/editor_content.css',
-        //paste_preprocess: function(plugin, args) {
-        //    console.log("ARGS");
-        //    console.log(args);
-        //    console.log("ARGS");
-        //},
-
-        // TESTING ----
-        //force_br_newlines: false,
-        //convert_newlines_to_brs: true,
-        // ------------
-
-        //toolbar: 'undo redo | bold underline italic strikethrough', // | fontsizeselect |  backcolorpicker forecolorpicker | removeformat
         toolbar: false,
         forced_root_block: false,
         invalid_elements: 'div',
         setup: function(ed) {
-            //$.each(['paste', 'cut', 'keyup', 'undo', 'redo'], function(index, value) {
-            //    ed.on(value, buildList(parseEditorText()));
-            //});
-            // ed.on('init', function(ed) {
-//                 ed.pasteAsPlainText = true;
-//             });
             ed.on('keydown', function(event) {
-                //console.log([getEditorHtml()]);
-                //console.log(event);
                 if (event.keyCode === 9) { // tab pressed
                     if (event.shiftKey) {
                         handleOutdent(ed);
@@ -56,12 +36,9 @@ var editorMain = function() {
                     event.preventDefault();
                     return false;
                 }
-                //buildList(parseEditorText());
             });
             ed.on('keyup', function(event) {
                 buildList(parseEditorText());
-                //console.log( {html: ed.getContent({format: 'raw'})} );
-                //console.log( {html: ed.getContent()} );
             });
             $.each(['paste', 'cut', 'keyup', 'undo', 'redo'], function(index, value) {
                 ed.on(value, changedListener);
@@ -135,7 +112,6 @@ var editorMain = function() {
 
     var handleIndent = function(editorInstance) {
         var sel = editorInstance.selection;
-        //console.log(sel.getSel());
         if (sel.isCollapsed()) {
             sel = sel.getSel();
         } else {
@@ -156,21 +132,14 @@ var editorMain = function() {
             editorInstance.execCommand('Indent');
         } else { // body item, time for magic
             var prev = node.previousSibling;
-            // console.log(sel);
-            // console.log(node.nodeName);
             if ($.inArray(node.nodeName, ['EM', 'STRONG', 'SPAN', '#text']) && prev === null) {
-                // console.log("OPTION 1");
-                //editorInstance.execCommand('InsertUnorderedList');
+            	// pass
             } else if (prev !== null && prev.previousSibling !== null && prev.previousSibling.nodeName !== "BR") {
-                // console.log("OPTION 2");
                 editorInstance.execCommand('InsertUnorderedList');
             } else if (node.nodeName === '#text' && node.previousSibling.nodeName === 'UL') {
-                // console.log("OPTION 3");
                 editorInstance.execCommand('InsertUnorderedList');
             } else if (node.nodeName === 'BODY' && sel.baseOffset > 1) {
-                // console.log("OPTION 4");
                 // make sure cursor is below an actual entry (via some DOM parsing magic)
-                // console.log(sel.baseOffset);
                 var offset = 0;
                 var i = 0;
                 var innerHTML = node.innerHTML;
@@ -194,13 +163,6 @@ var editorMain = function() {
                     }
                 }
 
-                //console.log(sel);
-                //console.log(['Offset = ' + offset, innerHTML.substring(i, i+4)]);
-                //editorInstance.execCommand('InsertUnorderedList');
-                //console.log(i);
-                //console.log(innerHTML);
-                //console.log(innerHTML.substring(i-1, i+4));
-                // console.log(innerHTML.substring(i-8, i+4));
                 if (innerHTML.substring(i, i+4) !== '<br>' && innerHTML.substring(i, i+5) !== '</ul>') {
                     editorInstance.execCommand('InsertUnorderedList');
                 } else if (innerHTML.substring(i, i+4) === '<br>' && innerHTML.substring(i-4, i) !== '<br>') {
@@ -210,22 +172,12 @@ var editorMain = function() {
                     && innerHTML.substring(i-8, i-4) !== '<br>') {
                     editorInstance.execCommand('InsertUnorderedList');
                 } else {
-                    // console.log(innerHTML);
-                    // console.log('Previous substring = ' + innerHTML.substring(i-8, i));
-                    // console.log(i);
-                    // console.log(innerHTML.length);
+                	// pass
                 }
             } else {
-                // console.log("Do Nothing.");
-
-                //console.log(editorInstance.getContent());
-                //console.log(editorInstance.selection.getSel());
-                // Do nothing.
+                // pass
             }
         }
-        //ed.execCommand('Indent');
-        //ed.execCommand('InsertUnorderedList');
-        //console.log( {html: ed.getContent()} );  REMEMBER TO TURN THIS BACK ON
     };
 
     var handleOutdent = function(editorInstance) {
@@ -236,7 +188,6 @@ var editorMain = function() {
             var rng = sel.getRng();
             sel = {anchorNode: rng.startContainer, baseOffset: rng.startOffset};
         }
-        // console.log(sel);
         var node = sel.anchorNode;
 
         if (node.nodeName === "#text" && node.parentNode.nodeName === "LI") {
@@ -248,16 +199,6 @@ var editorMain = function() {
         }
     };
 
-    //console.log(editor);
-    //tinyMCE.activeEditor.getContent();
-
-
-    // TODO: Font, Maximize?
-    ///*************************************
-    // * Toolbar Functionality
-    // *************************************/
-
-    // Font, Font Size, Color
 
 
     var toolbarHookups = {
@@ -267,9 +208,6 @@ var editorMain = function() {
        '#strike-holder' : 'strikethrough',
        '#undo-holder' : 'undo',
        '#redo-holder' : 'redo'
-       //'#numlist' : 'numlist',
-       //'#bullist' : 'Bullist',
-       //'#deindent' : 'Outdent'
     };
     $.each(toolbarHookups, function(key, value) {
        $(key).click(function() {
@@ -284,31 +222,12 @@ var editorMain = function() {
 	handleOutdent(tinyMCE.activeEditor);
     });
 
-
-    //$('#numlist')
-    //        ('numberedlist');
-    //$('#bullist')
-    //        ('bulletedlist');
-    //$('#inindent')
-    //        ('indent');
-    //$('#deindent')
-    //        ('outdent');
-    //$('#zoomin')
-    //        ('maximize');
-
-    //$('#expand').click(attachRandomListener);
-    //$('#deindent').click(detachRandomListener);
 };
 
 $(document).ready(editorMain);
 
-////var
-//
-//clearTimeout();
-//$('#save-message').html(' - Edited');
-//
-////stop listening for keystrokes
 
+// Changed listeners for when the user makes an edit
 var attachContentChangedListener = function(callbackFunction) {
     $.each(['paste', 'cut', 'keyup', 'undo', 'redo'], function(index, value) {
         tinyMCE.activeEditor.on(value, callbackFunction);
@@ -319,7 +238,6 @@ var detachContentChangedListener = function(callbackFunction) {
         tinyMCE.activeEditor.off(value, callbackFunction);
     });
 };
-
 var changedListener = function() {
     clearTimeout();
     $('#save-message').html(' - Edited');
@@ -400,9 +318,6 @@ var getEditorHtml = function() {
 
 var reductiveSplit = function(data, separator) {
     data = data.split(separator);
-    //data.filter(function(element) {
-    //    element != "";
-    //});
     var i = 0;
     while (i < data.length) {
         if (data[i] === "" || data[i] === "&nbsp;" || data[i] === "<br />") {
@@ -411,7 +326,6 @@ var reductiveSplit = function(data, separator) {
             i++;
         }
     }
-
     return data;
 };
 
