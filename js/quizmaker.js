@@ -20,7 +20,7 @@ TODO:
 //**************************************
 
 /* List of words not to remove from fill-in-the-blank questions
-	[Under development]
+	[incomplete]
 
    Includes:
 	- articles
@@ -127,10 +127,6 @@ function TrueFalseQuestion(element, identifier, definition, answer) {
 	this.definition = definition;
 	this.answer = answer;
 	
-	// TEMPORARY; REMOVE LATER (TODO)
-	this.questionType = 3;
-	/////////////////////////////////
-	
 	this.getText = function() {
 		return "True or false: \"" + this.identifier + "\" is associated with \"" + this.definition + "\"";
 	}
@@ -143,17 +139,10 @@ function FillInTheBlankQuestion(element, definitionString, startIndex, stopIndex
 	this.definitionString = definitionString;
 	this.answer = answer;
 	
-	// TEMPORARY; REMOVE LATER (TODO)
-	this.questionType = 2;
-	/////////////////////////////////
-	
 	// unsure if these are needed
 	this.startIndex = startIndex; 
 	this.stopIndex = stopIndex;
-	
-	
-	// TODO: metadata for location in notes
-	
+		
 	this.getText = function() {
 		return "Fill in the blank: \"" + this.definitionString + "\"";
 	}
@@ -239,10 +228,6 @@ function makeQuiz(parseResult, optionList) {
 		
 		generatedQuestions.push(newQuestion);
 	}
-	
-	// FOR TESTING PURPOSES TODO //
-	console.log(parseResult.aliases);
-	//***************************//
 	
 	return new Quiz(generatedQuestions);
 }
@@ -339,7 +324,7 @@ function makeTrueFalseQuestion(identifierPool, parseResult) {
 	} else {
 		answer = "false";
 		
-		// this is extra-naive: get a random incorrect answer from
+		// this is fairly naive: get a random incorrect answer from
 		// pool of all definitions
 		var definitionPool;
 		if (element instanceof DateElement) {
@@ -451,20 +436,3 @@ function mergeArrays(arr1, arr2) {
 	}
 	return ret;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -8,14 +8,8 @@ with the text editor formatting, and returns a ParseResult object, which consist
 of arrays of objects.
 
 TODO: 
-	- ordered lists (?)
-
 	- Anonymous labels not incrementing
-	- Whitespace definitions (?) 
-	- post-list identifiers not being recognized
-	- copy-paste issues (format from outside input?)
-	- newlines in copy/paste: not being split (because not <br>s)
-	- shorten notes in sidebar (part of editor.js)
+
 */
 
 //**************************************
@@ -164,14 +158,10 @@ function parseInput(html) {
 	 * reductiveSplit() is currently located in editor.js
 	 */
 	
-	// now externally defined
-	//var html = getEditorHtml();
-	
 	// eliminate zero-width spaces (U+200B)
 	html = html.replace(/\u200B+/g, "");
 	
 	// replace newlines with <br /> tags
-	//html = html.replace(/\n+/g, "<br />");
 	html = html.replace(/\n+/g, "");
 	
 	// replace &nbsp;s with " "
@@ -180,16 +170,14 @@ function parseInput(html) {
 	// translate HTML Entities to Unicode
 	html = he.decode(html);
 	
-	// quick-fix for endlist/linebreak issue?
-	// this causes nested-list issues
-	//html = html.replace(/<\/ul>/g, "</ul><br />");
+	// handle lists not ending with a linebreak;
+	// ugly, but it works
 	html = fixLists(html);
-	// This should NOT make it into production code
 
 	var elements = reductiveSplit(html, "<br />");	
 	
 	
-	// [temp?] fix for issue of mid-list <br>s being inserted
+	// fix for issue of mid-list <br>s being inserted
 	// essentially, re-merge erroneously separated lists
 	var numElements = elements.length-1;
 	for (var i=0; i<numElements; i++) {
@@ -221,10 +209,6 @@ function parseInput(html) {
 			
 			var startIndex = elements[i].indexOf("<ul>");
 			
-			//var listContents = getListContents( elements[i], startIndex);
-			
-			// TODO WHAT WAS I DOING HERE? ^^^^
-			
 			// strip off proceeding element, if present
 			var proceedingElement = elements[i].substring(elements[i].lastIndexOf("</ul>") + 5);
 			
@@ -250,11 +234,9 @@ function parseInput(html) {
 		
 		if (typeof parsedElement !== "undefined") {
 			// check if element already contained in sidebar representation		
-			//if (parser_representedElements.indexOf(parsedElement.getIdentifier()) === -1) {
 			parser_parsedElements.push(parsedElement);
 		
 			parser_parsedElements = mergeArrays(parser_parsedElements, parsedElement.getSubelements());
-			//}
 		
 			updateRepresentedElements(parsedElement);
 		}
@@ -298,9 +280,7 @@ function readLists(element) {
 function processListElements(contents) {
 	// given a string representing the contents of a list, recursively
 	// process the contents of that list as RawElements
-	
-	// TODO: better documentation
-	
+		
 	var startIndex = 0;
 	var stopIndex = 0;
 	var subelements = [];

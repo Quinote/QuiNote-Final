@@ -20,10 +20,8 @@ var numberCorrect;
 var currentQuestion;
 var choices;
 var selectTF = ["true", "false"]; // undesirable
-var flag = true;
-
-// FOR TESTING ONLY
-var test_ = false;
+var statusFlag = true;
+var quizFired = false;
 
 //**************************************
 // HANDLERS / LISTENERS
@@ -37,17 +35,12 @@ $(document).ready(function() {
 		if (typeof QUIZ_ONLY_FLAG === "undefined") {
 			parseResult = parseInput(getEditorHtml());
 		} else {
-			// TODO: SET the correct name of target here to get input?
 			var container = $('#multi-service-container');
  			var text = container.data('multicontent');
-			
-			//var text = $("#target").html();
-			
-			// not sure why <br />s are becoming <br>s, but here's a fix
+					
 			text = text.replace(/<br>/g, "<br />");
 			
 			parseResult = parseInput(text);
-			
 		}
 		
 		// check to make sure notes are of sufficient size
@@ -87,10 +80,8 @@ $(document).ready(function() {
 		$('#pagecontainer').css({"-webkit-filter" : "blur(3px)"});
 		$('#homeContainer').css({"-webkit-filter" : "blur(3px)"});
 		
-		// FOR PURPOSES OF TESTING
-		// This is the current fix for the quiz reset problem.
-		// It should be replaced with *real* code at some point.
-		if (test_) {
+		// check to see if a quiz has been called
+		if (quizFired) {
 			$("#scorepage").css({"display" : "none"});
 			hideCorrect();
 			hideIncorrect();
@@ -98,9 +89,8 @@ $(document).ready(function() {
 			$("#quizframe").toggle();
 			$("#question").toggle();
 		} else {
-			test_ = true;
+			quizFired = true;
 		}
-		///////////////////////////////////////////////////////
 
 	});
 	
@@ -114,7 +104,7 @@ $(document).ready(function() {
 		$('#quizframe').toggle();
 
 		nextQuestion();
-		flag = false;
+		statusFlag = false;
 	});
 	
 	
@@ -123,11 +113,6 @@ $(document).ready(function() {
 		nextHandler();
 		
 	});
-
-	$("#buttonCheck").click(function() { // CHECK answer button
-		// currently unused
-	});
-	
 	
 	// Listener for Note Index
 	$("#sidebar").mouseenter( function() { // handlerIn
@@ -210,7 +195,7 @@ function checkAnswer() {
 	} else if (currentQuestion instanceof FillInTheBlankQuestion) {
 		checkFITBQuestion();
 	}
-	flag = true;
+	statusFlag = true;
 }
 
 function checkMCQuestion() {
@@ -283,12 +268,12 @@ function checkFITBQuestion() {
 function nextHandler() {
 	// decide what to do upon pressing the 'next' button
 	if (quiz.hasNext()) {
-		if (flag) {
+		if (statusFlag) {
 			nextQuestion();
-			flag = false;
+			statusFlag = false;
 		} 
 	} else {
-		tearDown(); //?
+		completeQuiz();
 		
 	}
 }
@@ -325,7 +310,6 @@ function initializeMCQuestion(question) {
 	showRadiobuttons(question);
 	hideCheck();
 	
-	// not sure what this does?
 	$("#answer_choice").insertAfter("#formAction");
 }
 
@@ -348,16 +332,6 @@ function initializeFITBQuestion(question) {
 	hideCheck();
 	$("#answer_text").insertAfter("#formAction");
 }
-	
-
-function endQuiz(numberCorrect) {
-	// finish the quiz, present the percentage correct, etc.
-}
-
-function tearDown() {
-	// hide DOM elements, do necessary cleanup
-	completeQuiz();
-}
 
 
 ///// COPIED FUNCTIONS /////
@@ -373,7 +347,6 @@ function showQuiz(){
 };
 
 function unshowQuiz() { 
-	// FLAGGED FOR REMOVAL
 	
 	//$("#quizopener").style.display="none";
 	$("#quizframe").style.visibility="hidden";
@@ -502,38 +475,18 @@ function completeQuiz(){
 	var tot = (parseInt(om));
 	$("#question").html("<h4>Your score is: "+numberCorrect+"/"+totalQuestions+"<h4>");
 	$("#scoreDisplay").html("" +numberCorrect+"/"+totalQuestions+ "");
-	/* Investigating this as a cause of "quiz reset error"
-	
-	document.getElementById("answer_text").style.display="none";
-	document.getElementById("answer_choice").style.display="none";
-	document.getElementById("answer_check").style.display="none";
-	document.getElementById("scorepage").style.display="";
-	document.getElementById("buttonNext").style.display="none";
-	document.getElementById("question").style.display="none";
-	document.getElementById("buttonCheck").style.display="none";
-	document.getElementById("quizframe").style.display="none";
-	document.getElementById("quizopener").style.display="none";
-	document.getElementById("scoreKeeper").style.display="none";
-=======
-	*/
+
 	$("#answer_text").toggle();
 	$("#answer_choice").toggle();
 	$("#answer_check").toggle();
 	$("#scorepage").toggle();
 	$("#buttonNext").toggle();
 	$("#question").toggle();
-	//$("#buttonCheck").toggle();
 	$("#quizframe").toggle();
-	//$("#quizopener").toggle();
 };
 
 
 $(function(){
-	//$("#editorspace").draggable({
-	//	handle: "#editorToolbar",
-	//	containment: "#pagecontainer",
-	//	scroll: true
-	//});
 	$("#editorspace").draggable({
 		handle: "#mceu_8, #editorToolbar",
 		containment: "#pagecontainer",
